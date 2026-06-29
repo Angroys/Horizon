@@ -19,6 +19,11 @@ class SourceType(str, Enum):
     OSSINSIGHT = "ossinsight"
     GDELT = "gdelt"
     GOOGLE_NEWS = "google_news"
+    NEWSAPI = "newsapi"
+    EXA = "exa"
+    APITUBE = "apitube"
+    MEDIASTACK = "mediastack"
+    NEWSDATA = "newsdata"
 
 
 class ContentItem(BaseModel):
@@ -303,6 +308,90 @@ class GoogleNewsConfig(BaseModel):
     category: Optional[str] = None
 
 
+class NewsAPIConfig(BaseModel):
+    """NewsAPI.org source configuration.
+
+    Queries the NewsAPI.org `everything` endpoint
+    (https://newsapi.org/v2/everything) for articles matching a search
+    query and emits them as ContentItems. Requires an API key supplied via
+    the environment variable named by `api_key_env`. The endpoint caps
+    `page_size` at 100.
+    """
+
+    enabled: bool = False
+    api_key_env: str = "NEWSAPI_API_KEY"
+    query: str = "artificial intelligence"
+    language: str = "en"
+    page_size: int = 100  # NewsAPI caps page_size at 100
+    category: Optional[str] = None
+
+
+class ExaConfig(BaseModel):
+    """Exa (exa.ai) neural search source configuration.
+
+    Queries the Exa search API (https://api.exa.ai/search) for results
+    matching a search query and emits them as ContentItems. Requires an
+    API key supplied via the environment variable named by `api_key_env`.
+    """
+
+    enabled: bool = False
+    api_key_env: str = "EXA_API_KEY"
+    query: str = "artificial intelligence"
+    num_results: int = 25
+    category: Optional[str] = None
+
+
+class APITubeConfig(BaseModel):
+    """APITube news source configuration.
+
+    Queries the APITube news API (https://api.apitube.io/v1/news/everything)
+    for articles matching a search query and emits them as ContentItems.
+    Requires an API key supplied via the environment variable named by
+    `api_key_env`.
+    """
+
+    enabled: bool = False
+    api_key_env: str = "APITUBE_API_KEY"
+    query: str = "artificial intelligence"
+    language: str = "en"
+    per_page: int = 50
+    category: Optional[str] = None
+
+
+class MediastackConfig(BaseModel):
+    """Mediastack source configuration.
+
+    Queries the Mediastack news API (http://api.mediastack.com/v1/news)
+    for articles matching the configured keywords and emits them as
+    ContentItems. Requires an API key supplied via the environment
+    variable named by `api_key_env`. Field names mirror the Mediastack
+    API params (`keywords`, `languages`).
+    """
+
+    enabled: bool = False
+    api_key_env: str = "MEDIASTACK_API_KEY"
+    keywords: str = "artificial intelligence"
+    languages: str = "en"
+    limit: int = 100
+    category: Optional[str] = None
+
+
+class NewsDataConfig(BaseModel):
+    """NewsData.io source configuration.
+
+    Queries the NewsData.io news API (https://newsdata.io/api/1/news) for
+    articles matching a search query and emits them as ContentItems.
+    Requires an API key supplied via the environment variable named by
+    `api_key_env`.
+    """
+
+    enabled: bool = False
+    api_key_env: str = "NEWSDATA_API_KEY"
+    query: str = "artificial intelligence"
+    language: str = "en"
+    category: Optional[str] = None
+
+
 class SourcesConfig(BaseModel):
     """All sources configuration."""
 
@@ -316,6 +405,11 @@ class SourcesConfig(BaseModel):
     ossinsight: OSSInsightConfig = Field(default_factory=OSSInsightConfig)
     gdelt: Optional[GDELTConfig] = None
     google_news: Optional[GoogleNewsConfig] = None
+    newsapi: Optional[NewsAPIConfig] = None
+    exa: Optional[ExaConfig] = None
+    apitube: Optional[APITubeConfig] = None
+    mediastack: Optional[MediastackConfig] = None
+    newsdata: Optional[NewsDataConfig] = None
 
 
 class WebhookConfig(BaseModel):

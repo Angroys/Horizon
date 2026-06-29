@@ -126,6 +126,39 @@
       "ceid": null,
       "max_results": 100,
       "category": "news"
+    },
+    "newsapi": {
+      "enabled": false,
+      "api_key_env": "NEWSAPI_API_KEY",
+      "query": "artificial intelligence",
+      "language": "en",
+      "page_size": 100
+    },
+    "exa": {
+      "enabled": false,
+      "api_key_env": "EXA_API_KEY",
+      "query": "artificial intelligence",
+      "num_results": 25
+    },
+    "apitube": {
+      "enabled": false,
+      "api_key_env": "APITUBE_API_KEY",
+      "query": "artificial intelligence",
+      "language": "en",
+      "per_page": 50
+    },
+    "mediastack": {
+      "enabled": false,
+      "api_key_env": "MEDIASTACK_API_KEY",
+      "keywords": "artificial intelligence",
+      "languages": "en",
+      "limit": 100
+    },
+    "newsdata": {
+      "enabled": false,
+      "api_key_env": "NEWSDATA_API_KEY",
+      "query": "artificial intelligence",
+      "language": "en"
     }
   },
   "filtering": {

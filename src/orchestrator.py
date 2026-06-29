@@ -24,6 +24,11 @@ from .scrapers.openbb import OpenBBScraper
 from .scrapers.ossinsight import OSSInsightScraper
 from .scrapers.gdelt import GDELTScraper
 from .scrapers.google_news import GoogleNewsScraper
+from .scrapers.newsapi import NewsAPIScraper
+from .scrapers.exa import ExaScraper
+from .scrapers.apitube import APITubeScraper
+from .scrapers.mediastack import MediastackScraper
+from .scrapers.newsdata import NewsDataScraper
 from .ai.client import create_ai_client
 from .ai.analyzer import ContentAnalyzer
 from .ai.summarizer import DailySummarizer
@@ -312,6 +317,31 @@ class HorizonOrchestrator:
                 gn_scraper = GoogleNewsScraper(self.config.sources.google_news, client)
                 tasks.append(self._fetch_with_progress("Google News", gn_scraper, since))
 
+            # NewsAPI.org (keyed news search)
+            if self.config.sources.newsapi and self.config.sources.newsapi.enabled:
+                newsapi_scraper = NewsAPIScraper(self.config.sources.newsapi, client)
+                tasks.append(self._fetch_with_progress("NewsAPI", newsapi_scraper, since))
+
+            # Exa (keyed neural web search)
+            if self.config.sources.exa and self.config.sources.exa.enabled:
+                exa_scraper = ExaScraper(self.config.sources.exa, client)
+                tasks.append(self._fetch_with_progress("Exa", exa_scraper, since))
+
+            # APITube.io (keyed news search)
+            if self.config.sources.apitube and self.config.sources.apitube.enabled:
+                apitube_scraper = APITubeScraper(self.config.sources.apitube, client)
+                tasks.append(self._fetch_with_progress("APITube", apitube_scraper, since))
+
+            # Mediastack (keyed news search)
+            if self.config.sources.mediastack and self.config.sources.mediastack.enabled:
+                mediastack_scraper = MediastackScraper(self.config.sources.mediastack, client)
+                tasks.append(self._fetch_with_progress("Mediastack", mediastack_scraper, since))
+
+            # NewsData.io (keyed news search)
+            if self.config.sources.newsdata and self.config.sources.newsdata.enabled:
+                newsdata_scraper = NewsDataScraper(self.config.sources.newsdata, client)
+                tasks.append(self._fetch_with_progress("NewsData", newsdata_scraper, since))
+
             # Fetch all concurrently
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
@@ -372,6 +402,10 @@ class HorizonOrchestrator:
             return f"google_news:{meta['gn_query']}"
         if meta.get("domain"):
             return meta["domain"]
+        if meta.get("source"):
+            return meta["source"]
+        if meta.get("source_id"):
+            return meta["source_id"]
         return item.author or "unknown"
 
     def merge_cross_source_duplicates(self, items: List[ContentItem]) -> List[ContentItem]:

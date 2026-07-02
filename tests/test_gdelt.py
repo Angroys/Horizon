@@ -59,6 +59,19 @@ def test_time_window_uses_startdatetime_when_no_timespan() -> None:
     assert "timespan" not in params
 
 
+def test_browser_like_user_agent_header_is_sent() -> None:
+    # GDELT returns HTTP 429 for default tool user agents (httpx/curl)
+    # regardless of request rate, so a browser-like UA must be sent.
+    client = _mock_client(_articles_payload())
+    config = GDELTConfig(enabled=True, query="ai")
+    scraper = GDELTScraper(config, client)
+
+    asyncio.run(scraper.fetch(SINCE))
+
+    headers = client.get.call_args.kwargs["headers"]
+    assert headers["User-Agent"].startswith("Mozilla/5.0")
+
+
 def test_time_window_uses_timespan_when_set() -> None:
     client = _mock_client(_articles_payload())
     config = GDELTConfig(enabled=True, query="ai", timespan="24h")

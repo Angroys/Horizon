@@ -32,6 +32,13 @@ from ..models import ContentItem, GDELTConfig, SourceType
 
 logger = logging.getLogger(__name__)
 
+# GDELT answers HTTP 429 (regardless of request rate) for default tool user
+# agents (httpx/curl) AND for bot-style "compatible; ...+url" UAs; a plain
+# browser-like UA is required. Note: GDELT's edge may additionally throttle
+# datacenter IPs / non-browser TLS fingerprints, which can still yield 429s
+# that no request header can avoid.
+USER_AGENT = "Mozilla/5.0 (Horizon news aggregator)"
+
 
 class GDELTScraper(BaseScraper):
     """Scraper backed by the GDELT 2.0 DOC API."""
@@ -91,7 +98,10 @@ class GDELTScraper(BaseScraper):
 
         try:
             response = await self.client.get(
-                self.BASE_URL, params=params, follow_redirects=True
+                self.BASE_URL,
+                params=params,
+                headers={"User-Agent": USER_AGENT},
+                follow_redirects=True,
             )
             response.raise_for_status()
 
